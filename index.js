@@ -34,6 +34,23 @@ app.use(express.json())
 app.use(cors(corsOptions))
 
 //--------------------------Inicio de seccion rutas enfermeros------------------------
+/*app.get('/busqueda',async (req, res) => {
+    const {clave, campo} = req.body
+
+    const alumnos = collection(db, "Enfermeros")//Obtenciaon de datos 
+    const arrgl = await alumnos.where(`${campo}`, '==', `${clave}`).get()
+    let rtnData =  [] //Lo que se le mostrara al usuario
+
+    arrgl.forEach(alumno => {
+        rtnData.push(alumno.data())
+    })
+
+    res.json({
+        'alert' : 'Success...',
+        'data' : rtnData
+    })
+})*/
+
 app.post('/insertar', (req, res) => {
   const {nombre, apellidos, planta, puesto, telefono, entrada, salida, email, password} = req.body
 
