@@ -214,17 +214,17 @@ app.post('/insertarMedico', (req,res) => {
     })
     return
   }
-  const Medico = collection(db, "Medico")
+  const MedicoCollection = collection(db, "Medico")
 
-  getDoc(doc(Medico, email)).then(Medico => {
-    if(Medico.exists()) {
+  getDoc(doc(MedicoCollection, email)).then((MedicoDoc) => {
+    if (MedicoDoc.exists()) {
       res.json({
         'alert': 'El correo ya existe en la BD'
       })
     } else {
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(password, salt, (err, hash) => {
-          sendData = {
+          const sendData = {
             nombre,
             apellido,
             email,
@@ -235,7 +235,7 @@ app.post('/insertarMedico', (req,res) => {
             horarioEntrada, 
             horarioSalida
           }
-          setDoc(doc(Medico, email), sendData).then(() => {
+          setDoc(doc(MedicoCollection, email), sendData).then(() => {
             res.json({
               'alert': 'Success'
             })
@@ -297,7 +297,7 @@ app.post('/eliminarMedico', (req,res) => {
   const { email } =  req.body
   let MedicoBorrado = doc(db, "Medico", email)
   deleteDoc(MedicoBorrado)
-  .then((respose) => {
+  .then((response) => {
     res.json({
       'alert': 'Medico borrado'
     })
