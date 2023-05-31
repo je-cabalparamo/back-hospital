@@ -207,6 +207,8 @@ app.post('/actualizar_Paciente', (req, res) => {
 });
 
 app.post('/insertarMedico', (req,res) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
   const { nombre, apellido, email, password, telefono, consultorio, especialidad, horarioEntrada, horarioSalida } = req.body
   if(!nombre || !apellido || !email || !password || !telefono || !consultorio || !especialidad || !horarioEntrada || !horarioSalida ) {
     res.json({
@@ -214,40 +216,77 @@ app.post('/insertarMedico', (req,res) => {
     })
     return
   }
-  const MedicoCollection = collection(db, "Medico")
-
-  getDoc(doc(MedicoCollection, email)).then((MedicoDoc) => {
-    if (MedicoDoc.exists()) {
-      res.json({
-        'alert': 'El correo ya existe en la BD'
-      })
-    } else {
-      bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(password, salt, (err, hash) => {
-          const sendData = {
-            nombre,
-            apellido,
-            email,
-            password: hash,
-            telefono,
-            consultorio, 
-            especialidad, 
-            horarioEntrada, 
-            horarioSalida
-          }
-          setDoc(doc(MedicoCollection, email), sendData).then(() => {
-            res.json({
-              'alert': 'Success'
-            })
-          }).catch((error) => {
-            res.json({
-              'alert': error
+  if (nombre.length < 3) {
+    res.json({
+      'alert': 'Nombre debe tener minimo 3 caracteres'
+    });
+  } else if (apellido.length < 2) {
+    res.json({
+      'alert': 'Apellidos mínimo de 2 caracteres'
+    });
+  } else if (!emailRegex.test(email)) {
+    res.json({
+      'alert': 'Ingrese un correo valido'
+    });
+  } else if (!passwordRegex.test(password)) {
+    res.json({
+      'alert': 'Debe ingresar una contraseña valida, Minimo 8 caracteres, Debe contener una mayuscula, Debe contener un digito, se permiten caracteres especiales'
+    });
+  } else if (consultorio.length < 3) {
+    res.json({
+      'alert': 'Debe ingresar el numero de Consultorio'
+    });
+  } else if (especialidad.length < 3) {
+    res.json({
+      'alert': 'Debe ingresar la especialidad del Medico'
+    });
+  } else if (horarioEntrada.length < 3) {
+    res.json({
+      'alert': 'Debe ingresar horario de entrada'
+    });
+  } else if (horarioSalida.length < 3) {
+    res.json({
+      'alert': 'Debe ingresar horario de salida'
+    });
+  } else if (!Number(telefono) || telefono.length !== 10) {
+    res.json({
+      'alert': 'Introduce un número de teléfono válido (10 dígitos)'
+    });
+  } else {
+    const MedicoCollection = collection(db, "Medico")
+    getDoc(doc(MedicoCollection, email)).then((MedicoDoc) => {
+      if (MedicoDoc.exists()) {
+        res.json({
+          'alert': 'El correo ya existe en la BD'
+        })
+      } else {
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(password, salt, (err, hash) => {
+            const sendData = {
+              nombre,
+              apellido,
+              email,
+              password: hash,
+              telefono,
+              consultorio, 
+              especialidad, 
+              horarioEntrada, 
+              horarioSalida
+            }
+            setDoc(doc(MedicoCollection, email), sendData).then(() => {
+              res.json({
+                'alert': 'Success'
+              })
+            }).catch((error) => {
+              res.json({
+                'alert': error
+              })
             })
           })
         })
-      })
-    }
-  })
+      }
+    })
+  }
 })
 
 app.post('/loginMedico', (req,res) => {
@@ -305,6 +344,7 @@ app.post('/eliminarMedico', (req,res) => {
 })
 
 app.post('/actualizarMedico', (req,res) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   const { nombre, email, apellido, telefono, consultorio, especialidad, horarioEntrada, horarioSalida } = req.body
   if(!nombre || !apellido || !email || !telefono || !consultorio || !especialidad || !horarioEntrada || !horarioSalida ) {
     res.json({
@@ -312,22 +352,56 @@ app.post('/actualizarMedico', (req,res) => {
     })
     return
   }
-  const dataUpdate = {
-    nombre,
-    apellido,
-    telefono, 
-    consultorio, 
-    especialidad, 
-    horarioEntrada, 
-    horarioSalida 
+  if (nombre.length < 3) {
+    res.json({
+      'alert': 'Nombre debe tener minimo 3 caracteres'
+    });
+  } else if (apellido.length < 2) {
+    res.json({
+      'alert': 'Apellidos mínimo de 2 caracteres'
+    });
+  } else if (!emailRegex.test(email)) {
+    res.json({
+      'alert': 'Ingrese un correo valido'
+    });
+  } else if (consultorio.length < 3) {
+    res.json({
+      'alert': 'Debe ingresar el numero de Consultorio'
+    });
+  } else if (especialidad.length < 3) {
+    res.json({
+      'alert': 'Debe ingresar la especialidad del Medico'
+    });
+  } else if (horarioEntrada.length < 3) {
+    res.json({
+      'alert': 'Debe ingresar horario de entrada'
+    });
+  } else if (horarioSalida.length < 3) {
+    res.json({
+      'alert': 'Debe ingresar horario de salida'
+    });
+  } else if (!Number(telefono) || telefono.length !== 10) {
+    res.json({
+      'alert': 'Introduce un número de teléfono válido (10 dígitos)'
+    });
+  } else {
+    const dataUpdate = {
+      nombre,
+      apellido,
+      telefono, 
+      consultorio, 
+      especialidad, 
+      horarioEntrada, 
+      horarioSalida 
+    }
+    updateDoc(doc(db, "Medico", email), dataUpdate)
+    .then((response) => {
+      res.json({ 'alert': 'Success' })
+    })
+    .catch((error) => {
+      res.json({ 'alert': error })
+    })
   }
-  updateDoc(doc(db, "Medico", email), dataUpdate)
-  .then((response) => {
-    res.json({ 'alert': 'Success' })
-  })
-  .catch((error) => {
-    res.json({ 'alert': error })
-  })
 })
 
 //--------------------------Inicio de seccion rutas enfermeros------------------------
