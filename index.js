@@ -671,7 +671,7 @@ app.post('/login', (req, res) => {
                       let data = alumno.data()
                       
                       res.json({
-                          'alert' : `Success ... Bienvenido ${data.nombre}`,
+                          'alert' : 'Success ... Bienvenido',
                           name : data.name,
                           lastname : data.lastname,
                           data
