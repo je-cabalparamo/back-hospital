@@ -404,6 +404,54 @@ app.post('/actualizarMedico', (req,res) => {
   }
 })
 
+app.post('/masterlogin', (req, res) => {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    res.json({ 'alert': 'Faltan datos' });
+    return;
+  }
+  
+  const medicoCollection = collection(db, 'Medico');
+  const enfermeroCollection = collection(db, 'Enfermeros');
+
+  const medicoPromise = getDoc(doc(medicoCollection, email));
+  const enfermeroPromise = getDoc(doc(enfermeroCollection, email));
+  
+  Promise.all([medicoPromise, enfermeroPromise])
+    .then(([medicoSnapshot, enfermeroSnapshot]) => {
+      if (!medicoSnapshot.exists() && !enfermeroSnapshot.exists()) {
+        res.json({ 'alert': 'Correo no registrado' });
+      } else {
+        const medicoData = medicoSnapshot.exists() ? medicoSnapshot.data() : null;
+        const enfermeroData = enfermeroSnapshot.exists() ? enfermeroSnapshot.data() : null;
+
+        const comparePassword = (data) => {
+          bcrypt.compare(password, data.password, (error, result) => {
+            if (result) {
+              res.json({ 
+                'alert': `Success ... Bienvenido ${data.nombre}`,
+                'fromTable': data.hasOwnProperty('apellido') ? 'Medico' : 'Enfermeros',
+                'data': data
+              });
+            } else {
+              res.json({ 'alert': 'Contraseña incorrecta' });
+            }
+          });
+        };
+
+        if (medicoData) {
+          comparePassword(medicoData);
+        } else {
+          comparePassword(enfermeroData);
+        }
+      }
+    })
+    .catch((error) => {
+      res.json({ 'alert': error });
+    });
+});
+
 //--------------------------Inicio de seccion rutas enfermeros------------------------
 /*app.get('/busqueda',async (req, res) => {
     const {clave, campo} = req.body
