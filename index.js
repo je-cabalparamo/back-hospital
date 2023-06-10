@@ -275,7 +275,7 @@ app.post('/insertarMedico', (req,res) => {
             }
             setDoc(doc(MedicoCollection, email), sendData).then(() => {
               res.json({
-                'alert': 'Success'
+                'alert': 'Medico insertado exitosamente!'
               })
             }).catch((error) => {
               res.json({
@@ -396,7 +396,7 @@ app.post('/actualizarMedico', (req,res) => {
     }
     updateDoc(doc(db, "Medico", email), dataUpdate)
     .then((response) => {
-      res.json({ 'alert': 'Success' })
+      res.json({ 'alert': 'Medico actualizado exitosamente!' })
     })
     .catch((error) => {
       res.json({ 'alert': error })
