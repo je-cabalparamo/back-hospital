@@ -430,7 +430,7 @@ app.post('/masterlogin', (req, res) => {
           bcrypt.compare(password, data.password, (error, result) => {
             if (result) {
               res.json({ 
-                'alert': `Success ... Bienvenido ${data.nombre}`,
+                'alert': 'Success',
                 'fromTable': data.hasOwnProperty('apellido') ? 'Medico' : 'Enfermeros',
                 'data': data
               });
